@@ -1,7 +1,7 @@
 #include <string>
 #include <memory>
 
-	template<typename ... Args>
+template<typename ... Args>
 static std::string str_format(const std::string &format, Args ... args)
 {
 	auto size_buf = std::snprintf(nullptr, 0, format.c_str(), args ...) + 1;

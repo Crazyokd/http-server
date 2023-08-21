@@ -5,6 +5,7 @@
 #include "cJSON.h"
 #include "common.h"
 #include <fstream>
+#include "PropertiesParser.h"
 
 enum HTTP_STATUS_CODE {
 	HTTP_E_BAD_REQUEST	= 400,
@@ -105,8 +106,8 @@ int main() {
 	if (!ret) {
 		std::cout << "the scripts directory doesn't exist..." << std::endl;
 	}
-
-	svr.listen("127.0.0.1", 8080);
+	cppproperties::Properties props = cppproperties::PropertiesParser::Read("../config/application.properties");
+	svr.listen(props.GetProperty("ip").c_str(), stoi(props.GetProperty("port")));
 
 	return 0;
 }
