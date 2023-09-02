@@ -6,6 +6,9 @@
 #include "common.h"
 #include <fstream>
 #include "PropertiesParser.h"
+#include "json.hpp"
+
+using nlohmann::json;
 
 enum HTTP_STATUS_CODE {
 	HTTP_E_BAD_REQUEST	= 400,
@@ -14,6 +17,45 @@ enum HTTP_STATUS_CODE {
 
 int main() {
 	httplib::Server svr;
+
+	// use nlohmann/json
+	json datas = json::parse(R"(
+		{
+			"pi": 3.141,
+			"happy": true,
+			"arr": [
+				{
+					"key1": "val1",
+					"key2": "val2"
+				},
+				{
+					"key3": "val3",
+					"key4": "val4"
+				}
+			],
+			"name": "Niels",
+			"nothing": null,
+			"answer": {
+				"everything": 42
+			},
+			"object": {
+				"currency": "USD",
+				"value": 42.99
+			}
+		}
+	)");
+	svr.Get("/datas/expel", [&datas](const httplib::Request &req, httplib::Response &res) {
+		res.set_content(datas.dump(4), "application/json");
+	});
+	svr.Post("/datas/swallow", [&datas](const httplib::Request &req, httplib::Response &res) {
+		try {
+			datas = json::parse(req.body);
+			std::cout << datas.dump(4) << std::endl;
+		} catch (json::parse_error& e){
+			res.status = HTTP_E_BAD_REQUEST;
+		}
+	});
+
 	// scripts related http api
 	// 获取脚本
 	svr.Get("/scripts", [](const httplib::Request &req, httplib::Response &res) {
@@ -30,7 +72,7 @@ int main() {
 			}
 			}
 			closedir(dr); //close all directory
-			res.set_content("{\"result\": 0, [" + content + "]",	"application/json");
+			res.set_content("{\"result\": 0, [" + content + "]", "application/json");
 			} else {
 			std::cout << "open directory error" << std::endl;
 			res.status = HTTP_E_INTERNAL;
