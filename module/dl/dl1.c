@@ -1,7 +1,7 @@
 #include <dlfcn.h>
 #include <string.h>
 #include <stdio.h>
-#include "dl1.h"
+#include "dl.h"
 
 void invoke_method( char *lib, char *method, float argument )
 {

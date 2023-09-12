@@ -7,7 +7,8 @@
 #include <fstream>
 #include "PropertiesParser.h"
 #include "json.hpp"
-#include "dl1.h"
+#include <dlfcn.h>
+#include "dl.h"
 
 using nlohmann::json;
 
@@ -16,10 +17,52 @@ enum HTTP_STATUS_CODE {
 	HTTP_E_INTERNAL 	= 500,
 };
 
+void invoke_dl2() {
+	void* handle = dlopen("libdl2.so", RTLD_LAZY);  // 打开共享库文件
+
+    if (handle != nullptr)
+    {
+        typedef DL* (*GetInstanceFunc)();  // 定义函数指针类型
+		typedef void (*Method1Func)(DL*);
+		typedef void (DL::*Method1Func2)();
+        GetInstanceFunc getInstance = (GetInstanceFunc)dlsym(handle, "_ZN2DL11getInstanceEv");  // 获取 getInstance 函数指针
+
+        if (getInstance != nullptr)
+        {
+            DL* instance = getInstance();  // 调用 getInstance 方法获取实例
+            Method1Func method1 = nullptr;
+            *(void**)(&method1) = dlsym(handle, "method1");  // 获取 method1 成员函数指针
+			if (method1 != nullptr)
+            {
+                method1(instance);  // 调用 method1 方法
+            }
+            else
+            {
+                std::cout << "Failed to get function pointer for method1." << std::endl;
+            }
+			Method1Func2 method12 = nullptr;
+            *(void**)(&method12) = dlsym(handle, "_ZN2DL7method1Ev");  // 获取 method1 成员函数指针
+			if (method12 != nullptr)
+            {
+                (instance->*method12)();  // 调用 method1 方法
+            }
+            else
+            {
+                std::cout << "Failed to get function pointer for method12." << std::endl;
+            }
+
+            dlclose(handle);  // 关闭共享库
+        }
+    }
+	std::cout << "Failed to open shared library: " << dlerror() << std::endl;
+}
+
 int main(int argc, char *argv[]) {
 	for (int i = 1; i < argc; i++) {
 		invoke_method("libm.so.6", argv[i], 1.0);
 	}
+	invoke_dl2();
+
 	httplib::Server svr;
 
 	// use nlohmann/json
