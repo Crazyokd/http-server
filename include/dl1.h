@@ -1,0 +1,1 @@
+void invoke_method( char *lib, char *method, float argument );

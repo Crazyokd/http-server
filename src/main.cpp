@@ -7,6 +7,7 @@
 #include <fstream>
 #include "PropertiesParser.h"
 #include "json.hpp"
+#include "dl1.h"
 
 using nlohmann::json;
 
@@ -15,7 +16,10 @@ enum HTTP_STATUS_CODE {
 	HTTP_E_INTERNAL 	= 500,
 };
 
-int main() {
+int main(int argc, char *argv[]) {
+	for (int i = 1; i < argc; i++) {
+		invoke_method("libm.so.6", argv[i], 1.0);
+	}
 	httplib::Server svr;
 
 	// use nlohmann/json
