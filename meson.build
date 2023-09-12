@@ -1,4 +1,9 @@
 project('http-server', ['c', 'cpp'])
+
+add_project_arguments(
+  '-xc++',
+  language : 'c'
+)
 cc = meson.get_compiler('cpp')
 
 prefix = run_command('sh', '-c', 'echo $PWD').stdout().strip() / 'install'
