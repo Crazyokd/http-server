@@ -25,3 +25,4 @@ install_subdir('config', install_dir : prefix)
 
 subdir('module')
 subdir('src')
+subdir('test')

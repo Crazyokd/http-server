@@ -1,0 +1,1 @@
+gtest_dep = dependency('gtest', fallback : ['gtest', 'gtest_dep'])

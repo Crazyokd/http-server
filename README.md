@@ -20,4 +20,3 @@ curl -i -X POST -H "Content-Type: application/json" -d '{"name":"name", "content
 ```
 
 # TODO
-- Add Test Case.
