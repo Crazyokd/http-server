@@ -1,5 +1,4 @@
 #include "httplib.h"
-#include <iostream>
 #include <dirent.h> 
 #include <string>
 #include "cJSON.h"
@@ -9,6 +8,8 @@
 #include "json.hpp"
 #include <dlfcn.h>
 #include "dl.h"
+
+#include "fmt/core.h"
 
 using nlohmann::json;
 
@@ -38,7 +39,7 @@ void invoke_dl2() {
             }
             else
             {
-                std::cout << "Failed to get function pointer for method1." << std::endl;
+                fmt::print("Failed to get function pointer for method1.\n");
             }
 			Method1Func2 method12 = nullptr;
             *(void**)(&method12) = dlsym(handle, "_ZN2DL7method1Ev");  // 获取 method1 成员函数指针
@@ -48,13 +49,14 @@ void invoke_dl2() {
             }
             else
             {
-                std::cout << "Failed to get function pointer for method12." << std::endl;
+                fmt::print("Failed to get function pointer for method12.\n");
             }
 
             dlclose(handle);  // 关闭共享库
         }
-    }
-	std::cout << "Failed to open shared library: " << dlerror() << std::endl;
+    } else {
+		fmt::print("Failed to open shared library: ", dlerror(), "\n");
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -97,7 +99,7 @@ int main(int argc, char *argv[]) {
 	svr.Post("/datas/swallow", [&datas](const httplib::Request &req, httplib::Response &res) {
 		try {
 			datas = json::parse(req.body);
-			std::cout << datas.dump(4) << std::endl;
+			fmt::print(datas.dump(4), "\n");
 		} catch (json::parse_error& e){
 			res.status = HTTP_E_BAD_REQUEST;
 		}
@@ -115,13 +117,13 @@ int main(int argc, char *argv[]) {
 			if (en->d_type == DT_REG) {
 			if (!content.empty()) content += ", ";
 			content.append("\"" + std::string(en->d_name) + "\"");
-			std::cout << en->d_name << std::endl; //print all normal file name
+			fmt::print(en->d_name, "\n"); //print all normal file name
 			}
 			}
 			closedir(dr); //close all directory
 			res.set_content("{\"result\": 0, [" + content + "]", "application/json");
 			} else {
-			std::cout << "open directory error" << std::endl;
+			fmt::print("open directory error\n");
 			res.status = HTTP_E_INTERNAL;
 			}
 
@@ -193,7 +195,7 @@ int main(int argc, char *argv[]) {
 
 	auto ret = svr.set_mount_point("/scripts", "../scripts");
 	if (!ret) {
-		std::cout << "the scripts directory doesn't exist..." << std::endl;
+		fmt::print("the scripts directory doesn't exist...\n");
 	}
 	cppproperties::Properties props = cppproperties::PropertiesParser::Read("../config/application.properties");
 	svr.listen(props.GetProperty("ip").c_str(), stoi(props.GetProperty("port")));

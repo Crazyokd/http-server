@@ -23,6 +23,8 @@ install_subdir('templates', install_dir : prefix,
     )
 install_subdir('config', install_dir : prefix)
 
+fmt_dep = dependency('fmt', fallback : ['fmt', 'fmt_dep'])
+
 subdir('module')
 subdir('src')
 subdir('test')
