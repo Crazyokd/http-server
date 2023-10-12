@@ -1,4 +1,10 @@
 a simple http server written with httplib. And maybe a better meson example?
+# BUILD
+```shell
+meson setup build --native-file home.ini
+meson install -C build
+```
+
 # API
 ```shell
 # 获取所有脚本
