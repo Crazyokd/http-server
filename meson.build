@@ -9,7 +9,7 @@ add_project_arguments(
 )
 cc = meson.get_compiler('cpp')
 
-prefix = run_command('sh', '-c', 'echo $PWD').stdout().strip() / 'install'
+prefix = run_command('sh', '-c', 'echo $PWD', check : false).stdout().strip() / 'install'
 
 bindir = join_paths(prefix, get_option('bindir'))
 libdir = join_paths(prefix, get_option('libdir'))
@@ -63,12 +63,24 @@ if clangtidy.found() != true
     clangtidy = find_program('clang-tidy', required: false)
 endif
 if clangtidy.found()
-    run_target('analyze-clang-tidy',
+  run_target('analyze-clang-tidy',
     command : [ 'static-code-analyze.sh',
-        meson.version().version_compare('>= 0.55.0') ?
-          clangtidy.full_path() : clangtidy.path(),
-        meson.current_build_dir(),
-        meson.current_source_dir()
-        ]
-    )
+      meson.version().version_compare('>= 0.55.0') ?
+        clangtidy.full_path() : clangtidy.path(),
+      meson.current_build_dir(),
+      meson.current_source_dir()
+    ]
+  )
+endif
+
+clangformat = find_program('clang-format', required: false)
+if clangformat.found()
+  run_target('format',
+    command : [ 'format.sh',
+      meson.version().version_compare('>= 0.55.0') ?
+        clangformat.full_path() : clangformat.path(),
+      meson.current_build_dir(),
+      meson.current_source_dir()
+    ]
+  )
 endif
