@@ -11,6 +11,11 @@ meson compile analyze-cppcheck -C build
 meson compile analyze-clang-tidy -C build
 ```
 
+# FORMAT
+```shell
+meson compile format -C build
+```
+
 > you can query error-list by executing `cppcheck --errorlist` and then config `static-code-analyze.sh`
 
 # API
