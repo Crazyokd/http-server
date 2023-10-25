@@ -5,6 +5,14 @@ meson setup build --native-file home.ini
 meson install -C build
 ```
 
+# CHECK
+```shell
+meson compile analyze-cppcheck -C build
+meson compile analyze-clang-tidy -C build
+```
+
+> you can query error-list by executing `cppcheck --errorlist` and then config `static-code-analyze.sh`
+
 # API
 ```shell
 # 获取所有脚本

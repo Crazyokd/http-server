@@ -1,6 +1,6 @@
 project('http-server', ['c', 'cpp'],
   version: '0.0.1',
-  meson_version: '>= 0.53.0'
+  meson_version: '>= 0.56.0'
 )
 
 add_project_arguments(
@@ -18,7 +18,7 @@ comm_inc = include_directories('''
     include
 '''.split())
 
-comm_lib = meson.source_root() / 'lib'
+comm_lib = meson.project_source_root() / 'lib'
 cppproperties_dep = cc.find_library('cppproperties', dirs : comm_lib)
 
 install_subdir('templates', install_dir : prefix,
@@ -45,3 +45,30 @@ message('\n'.join([
   '        debugging support:            ' + get_option('buildtype'),
   '',
 ]))
+
+cppcheck = find_program('cppcheck', required: false)
+if cppcheck.found()
+    run_target('analyze-cppcheck',
+    command : [ 'static-code-analyze.sh',
+        meson.version().version_compare('>= 0.55.0') ?
+          cppcheck.full_path() : cppcheck.path(),
+        meson.current_build_dir(),
+        meson.current_source_dir()
+        ]
+    )
+endif
+
+clangtidy = find_program('run-clang-tidy', required: false) # requires clang-tools package
+if clangtidy.found() != true
+    clangtidy = find_program('clang-tidy', required: false)
+endif
+if clangtidy.found()
+    run_target('analyze-clang-tidy',
+    command : [ 'static-code-analyze.sh',
+        meson.version().version_compare('>= 0.55.0') ?
+          clangtidy.full_path() : clangtidy.path(),
+        meson.current_build_dir(),
+        meson.current_source_dir()
+        ]
+    )
+endif
