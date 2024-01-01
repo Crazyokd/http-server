@@ -3,6 +3,9 @@ a simple http server written with httplib. And maybe a better meson example?
 ```shell
 meson setup build --native-file home.ini
 meson install -C build
+
+# generate doc
+doxygen Doxyfile
 ```
 
 # CHECK
@@ -39,3 +42,4 @@ curl -i -X POST -H "Content-Type: application/json" -d '{"name":"name", "content
 ```
 
 # TODO
+- integrate with database
