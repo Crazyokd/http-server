@@ -4,3 +4,4 @@
 /subprojects/*
 !/subprojects/*.wrap
 /doc/
+.vscode
